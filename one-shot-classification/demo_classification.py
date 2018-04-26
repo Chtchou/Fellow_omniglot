@@ -103,13 +103,13 @@ if __name__ == "__main__":
 	# ** Models should be trained on images in 'images_background' directory to avoid 
 	#  using images and alphabets used in the one-shot evaluation **
 	#
-	print 'One-shot classification demo with Modified Hausdorff Distance'
+	print ('One-shot classification demo with Modified Hausdorff Distance')
 	perror = np.zeros(nrun)
 	for r in range(1,nrun+1):
 		rs = str(r)
 		if len(rs)==1:
 			rs = '0' + rs		
 		perror[r-1] = classification_run('run'+rs, LoadImgAsPoints, ModHausdorffDistance, 'cost')
-		print " run " + str(r) + " (error " + str(	perror[r-1] ) + "%)"		
+		print (" run " + str(r) + " (error " + str(	perror[r-1] ) + "%)")		
 	total = np.mean(perror)
-	print " average error " + str(total) + "%"
+	print (" average error " + str(total) + "%")
