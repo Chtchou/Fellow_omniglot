@@ -7,7 +7,7 @@ from scipy.spatial.distance import cdist
 nrun = 20 # number of classification runs
 fname_label = 'class_labels.txt' # where class labels are stored for each run
 
-def classification_run(folder,f_load,f_cost,ftype='cost'):
+def classification_run(main_folder,folder,f_load,f_cost,ftype='cost'):
 	# Compute error rate for one run of one-shot classification
 	#
 	# Input
@@ -22,7 +22,7 @@ def classification_run(folder,f_load,f_cost,ftype='cost'):
 	assert ((ftype=='cost') | (ftype=='score'))
 
 	# get file names
-	with open(folder+'/'+fname_label) as f:
+	with open(main_folder+'/'+folder+'/'+fname_label) as f:
 		content = f.read().splitlines()
 	pairs = [line.split() for line in content]
 	test_files  = [pair[0] for pair in pairs]
@@ -34,8 +34,8 @@ def classification_run(folder,f_load,f_cost,ftype='cost'):
 	ntest = len(test_files)
 
 	# load the images (and, if needed, extract features)
-	train_items = [f_load(f) for f in train_files]
-	test_items  = [f_load(f) for f in test_files ]
+	train_items = [f_load(main_folder+'/'+f) for f in train_files]
+	test_items  = [f_load(main_folder+'/'+f) for f in test_files ]
 
 	# compute cost matrix
 	costM = np.zeros((ntest,ntrain),float)
@@ -92,24 +92,3 @@ def LoadImgAsPoints(fn):
 	for i in range(n):
 		D[i,:] = D[i,:] - mean
 	return D
-
-if __name__ == "__main__":
-	#
-	# Running this demo should lead to a result of 38.8 percent errors.
-	#
-	#   M.-P. Dubuisson, A. K. Jain (1994). A modified hausdorff distance for object matching.
-	#     International Conference on Pattern Recognition, pp. 566-568.
-	#
-	# ** Models should be trained on images in 'images_background' directory to avoid 
-	#  using images and alphabets used in the one-shot evaluation **
-	#
-	print ('One-shot classification demo with Modified Hausdorff Distance')
-	perror = np.zeros(nrun)
-	for r in range(1,nrun+1):
-		rs = str(r)
-		if len(rs)==1:
-			rs = '0' + rs		
-		perror[r-1] = classification_run('run'+rs, LoadImgAsPoints, ModHausdorffDistance, 'cost')
-		print (" run " + str(r) + " (error " + str(	perror[r-1] ) + "%)")		
-	total = np.mean(perror)
-	print (" average error " + str(total) + "%")
